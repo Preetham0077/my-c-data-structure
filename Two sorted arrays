@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+int* mergeSortedUnique(int *a, int n, int *b, int m, int *resultSize) {
+    int *merged = (int *)malloc((n + m) * sizeof(int));
+    if (merged == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(1);
+    }
+
+    int i = 0, j = 0, k = 0;
+    while (i < n && j < m) {
+        if (a[i] < b[j]) {
+            if (k == 0 || merged[k - 1] != a[i])
+                merged[k++] = a[i];
+            i++;
+        }
+        else if (a[i] > b[j]) {
+            if (k == 0 || merged[k - 1] != b[j])
+                merged[k++] = b[j];
+            j++;
+        }
+        else { // a[i] == b[j]
+            if (k == 0 || merged[k - 1] != a[i])
+                merged[k++] = a[i];
+            i++; j++;
+        }
+    }
+    while (i < n) {
+        if (k == 0 || merged[k - 1] != a[i])
+            merged[k++] = a[i];
+        i++;
+    }
+
+    while (j < m) {
+        if (k == 0 || merged[k - 1] != b[j])
+            merged[k++] = b[j];
+        j++;
+    }
+
+    merged = (int *)realloc(merged, k * sizeof(int));
+    if (merged == NULL) {
+        printf("Memory reallocation failed!\n");
+        exit(1);
+    }
+
+    *resultSize = k;
+    return merged;
+}
+
+int main() {
+    int n, m, *a, *b, *merged, mergedSize;
+
+    printf("Enter size of first sorted array: ");
+    scanf("%d", &n);
+    a = (int *)malloc(n * sizeof(int));
+
+    printf("Enter %d sorted elements:\n", n);
+    for (int i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+
+    printf("Enter size of second sorted array: ");
+    scanf("%d", &m);
+    b = (int *)malloc(m * sizeof(int));
+
+    printf("Enter %d sorted elements:\n", m);
+    for (int i = 0; i < m; i++)
+        scanf("%d", &b[i]);
+    merged = mergeSortedUnique(a, n, b, m, &mergedSize);
+
+    printf("\nMerged Sorted Array without duplicates:\n");
+    for (int i = 0; i < mergedSize; i++)
+        printf("%d ", merged[i]);
+    printf("\n");
+
+
+    free(a);
+    free(b);
+    free(merged);
+
+    return 0;
+}
