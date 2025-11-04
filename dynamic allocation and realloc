@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char** split(char *str, char delim, int *count) {
+    char **tokens = NULL;   
+    int numTokens = 0;
+    int start = 0;         
+    int len = strlen(str);
+
+    for (int i = 0; i <= len; i++) {
+      
+        if (str[i] == delim || str[i] == '\0') {
+            int tokenLen = i - start;
+            if (tokenLen > 0) { 
+                char *token = (char *)malloc((tokenLen + 1) * sizeof(char));
+                if (token == NULL) {
+                    printf("Memory allocation failed!\n");
+                    exit(1);
+                }
+                for (int j = 0; j < tokenLen; j++)
+                    token[j] = str[start + j];
+                token[tokenLen] = '\0';
+
+               
+                char **temp = (char **)realloc(tokens, (numTokens + 1) * sizeof(char *));
+                if (temp == NULL) {
+                    printf("Memory reallocation failed!\n");
+                    exit(1);
+                }
+                tokens = temp;
+                tokens[numTokens++] = token;
+            }
+            start = i + 1; 
+        }
+    }
+
+    *count = numTokens;
+    return tokens;
+}
+
+int main() {
+    char input[200];
+    char delim;
+    int count;
+
+    printf("Enter a string: ");
+    fgets(input, sizeof(input), stdin);
+    input[strcspn(input, "\n")] = '\0';
+
+    printf("Enter delimiter character: ");
+    scanf("%c", &delim);
+
+    char **result = split(input, delim, &count);
+
+    printf("\nTokens found: %d\n", count);
+    for (int i = 0; i < count; i++) {
+        printf("Token %d: \"%s\"\n", i + 1, result[i]);
+        free(result[i]); 
+    }
+
+    free(result);
+    return 0;
+}
