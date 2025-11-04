@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int width;
+    int height;
+    unsigned char *data;
+} Image;
+Image* createImage(int width, int height) {
+    Image *img = (Image *)malloc(sizeof(Image));
+    if (img == NULL) {
+        printf("Memory allocation failed for Image struct!\n");
+        exit(1);
+    }
+
+    img->width = width;
+    img->height = height;
+    img->data = (unsigned char *)malloc(width * height * sizeof(unsigned char));
+
+    if (img->data == NULL) {
+        printf("Memory allocation failed for image buffer!\n");
+        free(img);
+        exit(1);
+    }
+
+    for (int i = 0; i < width * height; i++)
+        img->data[i] = 0;
+
+    return img;
+}
+
+
+unsigned char getPixel(Image *img, int x, int y) {
+    if (x < 0 || x >= img->width || y < 0 || y >= img->height) {
+        printf("getPixel: Invalid coordinates (%d, %d)\n", x, y);
+        return 0;
+    }
+    return *(img->data + y * img->width + x);
+}
+
+void setPixel(Image *img, int x, int y, unsigned char val) {
+    if (x < 0 || x >= img->width || y < 0 || y >= img->height) {
+        printf("setPixel: Invalid coordinates (%d, %d)\n", x, y);
+        return;
+    }
+    *(img->data + y * img->width + x) = val;
+}
+void printImage(Image *img) {
+    for (int y = 0; y < img->height; y++) {
+        for (int x = 0; x < img->width; x++) {
+            printf("%3d ", getPixel(img, x, y));
+        }
+        printf("\n");
+    }
+}
+void freeImage(Image *img) {
+    if (img) {
+        free(img->data);
+        free(img);
+    }
+}
+
+int main() {
+    int W, H;
+
+    printf("Enter image width and height: ");
+    scanf("%d %d", &W, &H);
+
+    Image *img = createImage(W, H);
+    setPixel(img, 0, 0, 100);
+    setPixel(img, W - 1, H - 1, 200);
+    setPixel(img, W / 2, H / 2, 255);
+
+    printf("\nImage Matrix:\n");
+    printImage(img);
+
+    printf("\nSample pixel (center): %d\n", getPixel(img, W / 2, H / 2));
+
+    freeImage(img);
+    return 0;
+}
