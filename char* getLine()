@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+char* getLine() {
+    char *buffer = NULL;    
+    int capacity = 0;       
+    int length = 0;          
+    int ch;
+
+    while ((ch = getchar()) != '\n' && ch != EOF) {
+       
+        if (length + 1 >= capacity) {
+            int newCapacity = (capacity == 0) ? 16 : capacity * 2; // start small, double each time
+            char *temp = realloc(buffer, newCapacity * sizeof(char));
+            if (temp == NULL) {
+                free(buffer);
+                printf("Memory allocation failed!\n");
+                return NULL;
+            }
+            buffer = temp;
+            capacity = newCapacity;
+        }
+
+        buffer[length++] = (char)ch; 
+    }
+
+    
+    if (length == 0 && ch == EOF) {
+        return NULL;
+    }
+
+    
+    buffer = realloc(buffer, (length + 1) * sizeof(char)); // shrink to fit
+    buffer[length] = '\0';
+
+    return buffer;
+}
+
+int main() {
+    printf("Enter a line: ");
+    char *line = getLine();
+
+    if (line == NULL) {
+        printf("\nNo input or memory allocation failed.\n");
+        return 1;
+    }
+
+    printf("You entered: %s\n", line);
+
+    free(line); 
+    return 0;
+}
